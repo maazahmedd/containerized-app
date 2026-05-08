@@ -1,3 +1,67 @@
+# Containerized Drawing Recognition App
+
+A multi-service web application that lets users sketch an object on a canvas and have a Keras CNN classify their drawing in real time. Built as an NYU Software Engineering project to practice container orchestration, microservice design, and shipping a polished, dockerized stack.
+
+## Architecture
+
+Three services, one network, orchestrated by Docker Compose:
+
+| Service | Stack | Role |
+|---|---|---|
+| `web-app` | Flask + Jinja templates | Auth, leaderboards, score analytics |
+| `machine-learning-client` | Flask + Keras (TensorFlow backend) | Serves a CNN trained on Google's QuickDraw doodles |
+| `mongodb` | MongoDB 4.0 | Stores users, scores, and per-object stats |
+
+The ML model (`keras10objects.h5`) recognizes 10 QuickDraw categories and grades each prediction by confidence, mapping it to a banded result (`PERFECT` → `FAILED`, scored 50 → 0).
+
+## Quick start
+
+Make sure Docker Desktop is installed and running. From the repo root:
+
+```bash
+docker-compose up
+```
+
+The web app will be available at http://127.0.0.1:3000.
+
+> **Note for Apple Silicon users:** One of the ML client's dependencies isn't supported on M1/M2 chips. You'll need to run the ML client inside a virtual machine or x86 emulation layer.
+
+## Running components individually
+
+### Web app (without Docker)
+
+```bash
+cd web-app
+python -m venv .venv
+source .venv/bin/activate         # on Windows: .venv\Scripts\activate.bat
+pip install -r requirements.txt
+export FLASK_APP=app.py            # on Windows: set FLASK_APP=app.py
+export FLASK_ENV=development       # on Windows: set FLASK_ENV=development
+flask run
+```
+
+### Machine learning client (without Docker)
+
+```bash
+cd machine-learning-client
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+flask run
+```
+
+## Tests
+
+Each service has its own pytest suite:
+
+```bash
+cd web-app && python -m pytest
+cd machine-learning-client && python -m pytest
+```
+
+## Team
+
+Kevin Gong · Dixit Timilsina · Maaz Ahmed · Sanjaya Bhatta · Fatema Nassar · Elyazya Al Kobaisi
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=9334554&assignment_repo_type=AssignmentRepo)
 <br />
 ![ML Tests](https://github.com/software-students-fall2022/containerized-app-exercise-team4/actions/workflows/ml-tests.yaml/badge.svg)
