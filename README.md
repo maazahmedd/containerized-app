@@ -1,5 +1,9 @@
 # Containerized Drawing Recognition App
 
+[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=9334554&assignment_repo_type=AssignmentRepo)
+![ML Tests](https://github.com/software-students-fall2022/containerized-app-exercise-team4/actions/workflows/ml-tests.yaml/badge.svg)
+![Web App Tests](https://github.com/software-students-fall2022/containerized-app-exercise-team4/actions/workflows/web-app-tests.yaml/badge.svg)
+
 A multi-service web application that lets users sketch an object on a canvas and have a Keras CNN classify their drawing in real time. Built as an NYU Software Engineering project to practice container orchestration, microservice design, and shipping a polished, dockerized stack.
 
 ## Architecture
@@ -12,18 +16,20 @@ Three services, one network, orchestrated by Docker Compose:
 | `machine-learning-client` | Flask + Keras (TensorFlow backend) | Serves a CNN trained on Google's QuickDraw doodles |
 | `mongodb` | MongoDB 4.0 | Stores users, scores, and per-object stats |
 
-The ML model (`keras10objects.h5`) recognizes 10 QuickDraw categories and grades each prediction by confidence, mapping it to a banded result (`PERFECT` → `FAILED`, scored 50 → 0).
+The ML model (`keras10objects.h5`) recognizes 10 QuickDraw categories and grades each prediction by confidence, mapping it to a banded result: `PERFECT` (50 pts), `EXCELLENT` (40), `VERY GOOD` (30), `GOOD` (20), `AVERAGE` (10), `FAILED` (0).
 
 ## Quick start
 
-Make sure Docker Desktop is installed and running. From the repo root:
+Make sure Docker Desktop is installed ([Mac](https://docs.docker.com/desktop/install/mac-install/) / [Windows](https://docs.docker.com/desktop/install/windows-install/)) and running. From the repo root:
 
 ```bash
 docker-compose up
 ```
 
-The web app will be available at http://127.0.0.1:3000.
+The web app will be available at <http://127.0.0.1:3000>.
 
+> **Tip:** If Docker is misbehaving with stale images, open Docker Desktop → bug icon (top right) → **Reset to factory defaults**, then re-run `docker-compose up`.
+>
 > **Note for Apple Silicon users:** One of the ML client's dependencies isn't supported on M1/M2 chips. You'll need to run the ML client inside a virtual machine or x86 emulation layer.
 
 ## Running components individually
@@ -33,12 +39,14 @@ The web app will be available at http://127.0.0.1:3000.
 ```bash
 cd web-app
 python -m venv .venv
-source .venv/bin/activate         # on Windows: .venv\Scripts\activate.bat
+source .venv/bin/activate         # on Windows: .venv\\Scripts\\activate.bat
 pip install -r requirements.txt
 export FLASK_APP=app.py            # on Windows: set FLASK_APP=app.py
 export FLASK_ENV=development       # on Windows: set FLASK_ENV=development
 flask run
 ```
+
+Flask will print a local address (e.g. `http://127.0.0.1:5000`) — open it in your browser.
 
 ### Machine learning client (without Docker)
 
@@ -61,168 +69,9 @@ cd machine-learning-client && python -m pytest
 
 ## Team
 
-Kevin Gong · Dixit Timilsina · Maaz Ahmed · Sanjaya Bhatta · Fatema Nassar · Elyazya Al Kobaisi
-[![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-c66648af7eb3fe8bc4f294546bfd86ef473780cde1dea487d3c4ff354943c9ae.svg)](https://classroom.github.com/online_ide?assignment_repo_id=9334554&assignment_repo_type=AssignmentRepo)
-<br />
-![ML Tests](https://github.com/software-students-fall2022/containerized-app-exercise-team4/actions/workflows/ml-tests.yaml/badge.svg)
-![Web App Tests](https://github.com/software-students-fall2022/containerized-app-exercise-team4/actions/workflows/web-app-tests.yaml/badge.svg)
-# Containerized App Exercise
-
-## Project Description
-
-**Machine Learning Client** - A game where a user is prompted to draw an object on a canvas. When the user submits their drawing, the model predicts what they drew and the user gets points based on the model's confidence output.
-
-**Web App** - A dashboard that displays analytics, including leaderboard for highest scores, most active users, and the average score for each object.
-
-**Database** - Stores each user's username and password, as well as their scores on each of the possible objects that the user is prompted to draw.
-
-## Docker Setup
-### WEBAPP + MONGODB Database Setup within Docker (using docker-compose)
-
-1. Docker Desktop: 
-Make sure Docker Desktop is installed, if not,
-
-    check [here](https://docs.docker.com/desktop/install/windows-install/) for windows
-
-    check
-    [here](https://docs.docker.com/desktop/install/mac-install/) for mac
-
-2. Once the docker desktop is installed, make sure you go to the top right corner and click on bug sign to navigate to **RESET TO FACTORY DEFAULTS**. This will reset the docker and prompt the docker to restart. Please make sure you do this step before running the files from github repository because the docker does not create right images sometimes.
-
-3. Go to the root folder (containerized-app-exercise-team4) and run the following command
-    ```
-    docker-compose up
-    ```
-
-4. This will install all the required dependencies and the web app starts running at port **127.0.0.1:3000**. Make sure you go to **127.0.0.1:3000** port instead of 5000 because the docker outputs the web-app at **127.0.0.1:3000** port. 
-
-## Machine Learning Client Setup
-
-**Note:** One of the modules we used for the machine learning client is not supported by Apple Silicon, so you won't be able to run it on Macs with M1 and M2 chips unless you install a virtual machine on your device.
-
-### Set Up Virtual Environment
-
-1. Change directory to machine-learning-client
-    ```
-    cd machine-learning-client
-    ```
-2. Create python virtual environment
-    ```
-    python -m venv .venv
-    ```
-3. Activate virtual environment on bash
-    ```
-    source .venv/Scripts/activate
-    ```
-4. Download dependencies
-    ```
-    pip install -r requirements.txt
-    ```
-
-### Run Machine Learning Client
-
-1. Change directory to machine-learning-client
-    ```
-    cd machine-learning-client
-    ```
-2. Activate virtual environment
-    ```
-    source .venv/Scripts/activate
-    ```
-3. Run the project
-    ```
-    flask run
-    ```
-
-The player draws an image on canvas and gets results as **PERFECT, EXCELLENT, VERY GOOD, GOOD, AVERAGE and FAILED** which are mapped to **50, 40, 30, 20, 10, 0** respectively.  
-
-## Web App Setup (If you want to run webapp without using docker-compose)
-
-### Activate Virtual Environment
-
-1. Change directory to web-app
-    ```
-    cd web-app
-    ```
-
-2. Create virtual environment
-    ```
-    python -m venv .venv
-    ```
-
-
-3. Activate virtual environment
-    **If you ran the Machine Learning client in a virtual environment called .venv, pick a different name for the virtual environment when running the web app. If picking a different name, make sure to replace .venv in all the following commands with the new name of your virtual environment.**
-
-    #### For Windows: 
-    ```
-    .venv\Scripts\activate.bat
-    ```
-
-    #### For mac: 
-    ```
-    source .venv/bin/activate
-    ```
-
-4. Install the packages: 
-    ```
-    pip install -r requirements.txt
-    ```
-
-5. Define two environment variables from the command line:
-    #### On Windows, use 
-    ```
-    set FLASK_APP=app.py and set FLASK_ENV=development
-    ```
-        
-    #### On Mac, use  
-    ```
-    export FLASK_APP=app.py and export FLASK_ENV=development
-    ```
-   
-6. Start flask with 
-    ```
-    flask run
-    ```
-
-    This will output an address at which the app is running locally, e.g. https://127.0.0.1:5000. Visit that address in a web browser.
-
-
-## Run Tests
-
-#### Run Machine Learning Client Tests
-If you want to run machine learning client tests, do the following:
-1. change directory to machine-learning-client
-    ```
-    cd machine-learning-client 
-    ``` 
-2. Run 
-    ```
-    python -m pytest
-    ```
-
-#### Run Web-App Tests
-If you want to run web app tests, do the following:
-1. change directory to web-app
-    ```
-    cd web-app 
-    ``` 
-2. Run 
-    ```
-    python -m pytest
-    ```
-
-
-## Team Members
-
-[Kevin Gong](https://github.com/kxg202)
-
-[Dixit Timilsina](https://github.com/dt1930)
-
-[Maaz Ahmed](https://github.com/maazahmedd)
-
-[Sanjaya Bhatta](https://github.com/itSanjaya)
-
-[Fatema Nassar](https://github.com/fnassar)
-
-[Elyazya Al Kobaisi](https://github.com/elyazya)
+- [Kevin Gong](https://github.com/kxg202)
+- [Dixit Timilsina](https://github.com/dt1930)
+- [Maaz Ahmed](https://github.com/maazahmedd)
+- [Sanjaya Bhatta](https://github.com/itSanjaya)
+- [Fatema Nassar](https://github.com/fnassar)
+- [Elyazya Al Kobaisi](https://github.com/elyazya)
